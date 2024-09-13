@@ -1,7 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .game-container {
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            cursor: pointer;
+            border: 2px solid #333;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+        <div class="board" id="board">
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+        </div>
+        <div class="status" id="status">Spieler X ist am Zug</div>
+        <button id="restartButton">Neustart</button>
+    </div>
+
+    <script>
+        const board = document.querySelectorAll('[data-cell]');
+        const statusText = document.getElementById('status');
+        const restartButton = document.getElementById('restartButton');
+        let currentPlayer = 'X';
+        let gameActive = true;
+        const winConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        function handleCellClick(event) {
+            const cell = event.target;
+            const cellIndex = Array.from(board).indexOf(cell);
+
+            if (cell.textContent !== '' || !gameActive) {
+                return;
+            }
+
+            cell.textContent = currentPlayer;
+            checkWinner();
+
+            if (gameActive) {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusText.textContent = `Spieler ${currentPlayer} ist am Zug`;
+            }
+        }
+
+        function checkWinner() {
+            for (let condition of winConditions) {
+                const [a, b, c] = condition;
+                if (
+                    board[a].textContent &&
+                    board[a].textContent === board[b].textContent &&
+                    board[a].textContent === board[c].textContent
+                ) {
+                    statusText.textContent = `Spieler ${currentPlayer} gewinnt!`;
+                    gameActive = false;
+                    return;
+                }
+            }
+
+            const draw = Array.from(board).every(cell => cell.textContent !== '');
+            if (draw) {
+                statusText.textContent = 'Unentschieden!';
+                gameActive = false;
+            }
+        }
+
+        function restartGame() {
+            currentPlayer = 'X';
+            gameActive = true;
+            statusText.textContent = 'Spieler X ist am Zug';
+            board.forEach(cell => cell.textContent = '');
+        }
+
+        board.forEach(cell => cell.addEventListener('click', handleCellClick));
+        restartButton.addEventListener('click', restartGame);
+    </script>
+
 </body>
 </html>
